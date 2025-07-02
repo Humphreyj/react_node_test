@@ -108,20 +108,19 @@ function App() {
             <main className="flex-grow">
               <Routes>
                 {/* Public Routes */}
-                <Route path="/" element={<Landing />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 {/* Redirect root path to landing page */}
-                {/* <Route
+                <Route
                   path="/"
                   element={
                     <ProtectedRoute>
                       <Landing />
                     </ProtectedRoute>
                   }
-                /> */}
+                />
                 {/* Protected Admin Routes */}
                 <Route
                   path="/admin/dashboard"

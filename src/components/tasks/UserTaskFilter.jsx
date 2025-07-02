@@ -27,7 +27,7 @@ import {
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const TaskFilter = () => {
+const UserTaskFilter = () => {
   // State management with proper initialization
   const [tasks, setTasks] = useState([]);
   const [filteredTasks, setFilteredTasks] = useState([]);
@@ -310,7 +310,7 @@ const TaskFilter = () => {
             </button>
           </div>
         ) : (
-          tasks.map((task) => (
+          filteredTasks.map((task) => (
             <div
               key={task.id}
               className="bg-white shadow-md p-4 rounded-md border-l-4 border-blue-400"
@@ -364,4 +364,4 @@ const TaskFilter = () => {
   );
 };
 
-export default TaskFilter;
+export default UserTaskFilter;
