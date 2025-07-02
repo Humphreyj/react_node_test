@@ -55,32 +55,6 @@ const UserPage = () => {
     });
   };
 
-  // Handle Task Deletion
-  const handleDeleteTask = (taskId) => {
-    const updatedTasks = tasks.filter((task) => task.id !== taskId);
-    setTasks(updatedTasks);
-    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
-
-    toast.error("Task removed successfully!", { icon: "🗑️" });
-  };
-
-  // Handle Progress Update
-  const updateProgress = (taskId, progress) => {
-    const updatedTasks = tasks.map((task) =>
-      task.id === taskId ? { ...task, progress: parseInt(progress) } : task
-    );
-
-    setTasks(updatedTasks);
-    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
-  };
-
-  // Function to get priority color
-  const getPriorityColor = (priority) => {
-    if (priority === "High") return "text-red-600 font-bold";
-    if (priority === "Medium") return "text-yellow-600 font-bold";
-    return "text-green-600 font-bold"; // Low priority
-  };
-
   return (
     <div className="flex min-h-screen bg-gray-100">
       <UserSidebar />
