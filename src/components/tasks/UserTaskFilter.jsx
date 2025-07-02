@@ -24,6 +24,8 @@ import {
   FaExclamationTriangle,
   FaTasks,
 } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const TaskFilter = () => {
   // State management with proper initialization
@@ -168,6 +170,32 @@ const TaskFilter = () => {
     applyFilters(tasks, newFilters);
   };
 
+  // Handle Progress Update
+  const updateProgress = (taskId, progress) => {
+    const updatedTasks = tasks.map((task) =>
+      task.id === taskId ? { ...task, progress: parseInt(progress) } : task
+    );
+
+    setTasks(updatedTasks);
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+  };
+
+  // Function to get priority color
+  const getPriorityColor = (priority) => {
+    if (priority === "High") return "text-red-600 font-bold";
+    if (priority === "Medium") return "text-yellow-600 font-bold";
+    return "text-green-600 font-bold"; // Low priority
+  };
+
+  // Handle Task Deletion
+  const handleDeleteTask = (taskId) => {
+    const updatedTasks = tasks.filter((task) => task.id !== taskId);
+    setTasks(updatedTasks);
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+
+    toast.error("Task removed successfully!", { icon: "🗑️" });
+  };
+
   // Loading state
   if (loading) {
     return (
@@ -266,73 +294,72 @@ const TaskFilter = () => {
       </div>
 
       {/* Task list */}
-      {filteredTasks.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
-          <p>No tasks match your filters</p>
-          <button
-            className="mt-2 px-4 py-2 text-sm text-blue-600 hover:text-blue-800"
-            onClick={() => {
-              const resetFilters = { status: "all", search: "" };
-              setFilters(resetFilters);
-              applyFilters(tasks, resetFilters);
-            }}
-          >
-            Reset Filters
-          </button>
-        </div>
-      ) : (
-        <ul className="divide-y divide-gray-200">
-          {filteredTasks.map((task) => (
-            <li key={task.id} className="py-4">
-              <div className="flex items-start justify-between">
-                <div className="flex-1 min-w-0">
-                  <h3
-                    className={`text-lg font-medium ${task.status === "complete" ? "line-through text-gray-500" : "text-gray-900"}`}
-                  >
-                    {task.title}
-                  </h3>
-                  <p
-                    className={`mt-1 text-sm ${task.status === "complete" ? "text-gray-400" : "text-gray-600"}`}
-                  >
-                    {task.description}
-                  </p>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        task.status === "complete"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-yellow-100 text-yellow-800"
-                      }`}
-                    >
-                      {task.status === "complete" ? "Complete" : "Incomplete"}
-                    </span>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredTasks.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <p>No tasks match your filters</p>
+            <button
+              className="mt-2 px-4 py-2 text-sm text-blue-600 hover:text-blue-800"
+              onClick={() => {
+                const resetFilters = { status: "all", search: "" };
+                setFilters(resetFilters);
+                applyFilters(tasks, resetFilters);
+              }}
+            >
+              Reset Filters
+            </button>
+          </div>
+        ) : (
+          tasks.map((task) => (
+            <div
+              key={task.id}
+              className="bg-white shadow-md p-4 rounded-md border-l-4 border-blue-400"
+            >
+              <h3 className="text-lg font-semibold">{task.title}</h3>
+              <p className="text-gray-600">{task.description}</p>
 
-                    {task.priority && (
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          task.priority === "high"
-                            ? "bg-red-100 text-red-800"
-                            : task.priority === "medium"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-green-100 text-green-800"
-                        }`}
-                      >
-                        {task.priority}
-                      </span>
-                    )}
-                  </div>
-                </div>
+              <span className={`text-sm ${getPriorityColor(task.priority)}`}>
+                Priority: {task.priority}
+              </span>
 
-                {task.dueDate && (
-                  <div className="ml-4 flex-shrink-0 text-sm text-gray-500">
-                    Due: {new Date(task.dueDate).toLocaleDateString()}
-                  </div>
-                )}
+              <p className="text-sm text-gray-700 mt-1">
+                <span className="font-semibold">Assigned To:</span>{" "}
+                {task.assignedTo}
+              </p>
+
+              <p className="text-sm text-gray-700 mt-1">
+                <span className="font-semibold">Deadline:</span> {task.deadline}
+              </p>
+
+              {/* Task Progress */}
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700">
+                  Progress:
+                </label>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={task.progress}
+                  onChange={(e) => updateProgress(task.id, e.target.value)}
+                  className="w-full mt-2 accent-blue-600"
+                />
+                <span className="text-sm font-medium text-gray-700">
+                  {task.progress}% Completed
+                </span>
               </div>
-            </li>
-          ))}
-        </ul>
-      )}
+
+              {/* Delete Button */}
+              <button
+                onClick={() => handleDeleteTask(task.id)}
+                className="mt-4 w-full bg-red-600 text-white p-2 rounded-lg font-semibold hover:bg-red-700 transition-all"
+              >
+                🗑️ Delete Task
+              </button>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   );
 };
